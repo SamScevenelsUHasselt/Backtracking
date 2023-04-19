@@ -17,6 +17,7 @@ public class Match {
         return matches.size() - 1;
     }
 
+    //hulpfunctie voor de conversie naar string
     public String getMatchString(){
         if(matchTestIndex<matches.size()) {
             if (matches.get(matchTestIndex) != null) {
@@ -37,6 +38,7 @@ public class Match {
         else return matches.get(matchTestIndex)[0].magSpelen(matches.get(matchTestIndex)[1],dubbels,spel,ronde) && matches.get(matchTestIndex)[1].magSpelen(matches.get(matchTestIndex)[0],dubbels,spel,ronde);
     }
 
+    //roept voor beide spelers van de match hun speel functie op
     public void speelMatch(int spel,int ronde){
         if(matches.get(matchTestIndex) != null){
             matches.get(matchTestIndex)[0].speel(matches.get(matchTestIndex)[1],spel,ronde);
@@ -44,6 +46,7 @@ public class Match {
         }
     }
 
+    //roept voor beide spelers van de match hun backtrack functie op
     public void backTrack(int spel,int ronde){
         if(matches.get(matchTestIndex) != null) {
             matches.get(matchTestIndex)[0].backTrack(matches.get(matchTestIndex)[1], spel, ronde);

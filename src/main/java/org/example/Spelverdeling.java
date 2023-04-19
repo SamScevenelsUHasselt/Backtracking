@@ -22,22 +22,24 @@ public class Spelverdeling {
             return Optional.empty();
         }
 
+        //Maak arraylist van all ploegen
         ArrayList<Ploeg> ploegArray = new ArrayList<>();
         for (int i = 0; i < ploegen; i++) {
             ploegArray.add(new Ploeg(Character.toString(65 + i)));
         }
 
+        //Maak arraylist van alle mogelijke matches
         ArrayList<Ploeg[]> matches = new ArrayList<>();
         for(int i = 0; i < ploegArray.size() ;i++){
             for(int j = i + 1; j < ploegArray.size(); j++){
                 matches.add(new Ploeg[]{ploegArray.get(i), ploegArray.get(j)});
             }
         }
-        matches.add(null);
+        matches.add(null); //Geen match spelen is ook een mogelijkheid. Dit wordt gerepresenteerd met null
 
-
+        //backtracking algoritme
         Match[][] oplossingMatches = solve(new Match[rondes][spellen],new Match(matches),matches,ploegArray,0,0,spellen,dubbels,rondes,false);
-        while(oplossingMatches==null){
+        while(oplossingMatches==null){//blijf rondes toevoegen tot een oplossing gevonden is
             System.out.println("Rondes Verhogen!!");
             rondes++;
             oplossingMatches = solve(new Match[rondes][spellen],new Match(matches),matches,ploegArray,0,0,spellen,dubbels,rondes,false);
@@ -62,8 +64,8 @@ public class Spelverdeling {
 
     //Backtracking Algorithm
     private static Match[][] solve(Match[][] rooster,Match huidigeMatch,ArrayList<Ploeg[]> matches,ArrayList<Ploeg> ploegArray,int spelIndex, int rondeIndex, int spellen, int dubbels, int rondes,boolean backtracking){
-        calls++;
-        if(verbose){
+        calls++; //wordt bijgehouden voor interesse
+        if(verbose){ //print huidig grid
             System.out.println("Call "+ calls);
             toonVerdelingMatch(rooster,rondes,spellen);
         }
@@ -79,16 +81,16 @@ public class Spelverdeling {
             return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex, rondeIndex, spellen, dubbels, rondes,backtracking);
         }
 
-        //Backtracking en indexes zijn niet negatief door vorig if statement (beter op deze manier door 2d array)
+        //Backtracking  (indexes zijn niet negatief door vorig if statement)
         if(backtracking){
-            backtracks++;
+            backtracks++; //wordt bijgehouden voor interesse
             huidigeMatch = rooster[rondeIndex][spelIndex];
             rooster[rondeIndex][spelIndex] = null;
             huidigeMatch.backTrack(spelIndex,rondeIndex);
             huidigeMatch.volgendeMatch();
         }
 
-        //Oplossing gevonden (Bottleneck)
+        //Oplossing gevonden
         if(allePloegenAllesGespeeld(ploegArray,spellen)) return rooster;
 
         //Alle spellen gevuld, naar volgende ronde
@@ -101,7 +103,7 @@ public class Spelverdeling {
             return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex-1, rondeIndex, spellen, dubbels, rondes,true);
         }
 
-        //alle matchen doorlopen -> backtracken naar vorig spel
+        //alle mogelijke matchen doorlopen -> backtracken naar vorig spel
         if(huidigeMatch.getMatchTestIndex()>huidigeMatch.getAmountOfMatches()){
             return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex-1, rondeIndex, spellen, dubbels, rondes,true);
         }
@@ -144,6 +146,7 @@ public class Spelverdeling {
         System.out.println(concat);
     }
 
+    //print alleen uit wanneer er een verandering aan het grid gebeurt is (voor debugging)
     private static void toonVerdelingMatch(Match[][] verdeling,int rondes,int spellen) {
         String[][] oplossingString = new String[rondes][spellen];
         for(int i = 0; i < rondes;i++){
