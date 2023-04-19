@@ -7,6 +7,31 @@ public class Spelverdeling {
     static String meanwhile;
     static final boolean verbose = false;
 
+    public static void toonVerdeling(int ploegen, int spellen, int dubbels, int rondes) {
+
+        Optional<String[][]> oplossing = spelverdeling(ploegen, spellen, dubbels, rondes);
+
+        if(oplossing.isPresent()){
+            String[][] verdeling = oplossing.get();
+            System.out.println("took " + calls + " calls to solve");
+            System.out.println("used " + backtracks + " backtracks");
+            StringBuilder concat = new StringBuilder();
+            concat.append("Verdeling:\n");
+            for (int r = 0; r < verdeling.length; r++) {
+                concat.append("Ronde ").append(r + 1);
+                for (int s = 0; s < verdeling[r].length; s++) {
+                    concat.append("| ").append(verdeling[r][s]).append(" ");
+                    if(!verdeling[r][s].equals("NULL")) concat.append(" ");
+                }
+                concat.append("|\n");
+            }
+            System.out.println(concat);
+        }
+        else {//door toevoegen van rondes zal dit nooit het geval zijn
+            System.out.println("Geen oplossing");
+        }
+    }
+
     public static Optional<String[][]> spelverdeling(int ploegen, int spellen, int dubbels, int rondes) {
         calls = 0;
         if (ploegen % 2 != 0) {
@@ -44,8 +69,6 @@ public class Spelverdeling {
             rondes++;
             oplossingMatches = solve(new Match[rondes][spellen],new Match(matches),matches,ploegArray,0,0,spellen,dubbels,rondes,false);
         }
-        System.out.println("took " + calls + " calls to solve");
-        System.out.println("used " + backtracks + " backtracks");
 
         //Match[][] -> String [][]
             String[][] oplossingString = new String[rondes][spellen];
@@ -129,21 +152,6 @@ public class Spelverdeling {
             }
         }
         return true;
-    }
-
-    // Print de spelverdeling
-    public static void toonVerdeling(String[][] verdeling) {
-        StringBuilder concat = new StringBuilder();
-        concat.append("Verdeling:\n");
-        for (int r = 0; r < verdeling.length; r++) {
-            concat.append("Ronde ").append(r + 1);
-            for (int s = 0; s < verdeling[r].length; s++) {
-                concat.append("| ").append(verdeling[r][s]).append(" ");
-                if(!verdeling[r][s].equals("NULL")) concat.append(" ");
-            }
-            concat.append("|\n");
-        }
-        System.out.println(concat);
     }
 
     //print alleen uit wanneer er een verandering aan het grid gebeurt is (voor debugging)
