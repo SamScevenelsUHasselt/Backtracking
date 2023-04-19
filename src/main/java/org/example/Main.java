@@ -1,6 +1,5 @@
 package org.example;
 
-import java.util.Collections;
 import java.util.Optional;
 
 public class Main {
@@ -12,7 +11,7 @@ public class Main {
             -4 2 0 4 -- zeer kort met backtracking
             -4 2 0 4 -- 2x rondes verhogen
             -4 2 1 2 -- dubbels
-            -6 3 1 3 -- buddels zorgt voor backtracking
+            -6 3 1 3 -- dubbels zorgt voor backtracking
         */
 
 
