@@ -43,4 +43,16 @@ public class Ploeg {
         return Collections.frequency(tegenGespeeld,tegenstander)<=dubbels && !spellenGespeeld.contains(spel) && !rondesGespeeld.contains(ronde);
     }
 
+    public ArrayList<Ploeg> getTegenGespeeld() {
+        return tegenGespeeld;
+    }
+
+    public ArrayList<Integer> getSpellenGespeeld() {
+        return spellenGespeeld;
+    }
+
+    public ArrayList<Integer> getRondesGespeeld() {
+        return rondesGespeeld;
+    }
+
 }
