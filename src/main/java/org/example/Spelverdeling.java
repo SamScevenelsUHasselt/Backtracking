@@ -86,7 +86,7 @@ public class Spelverdeling {
     }
 
     //Backtracking Algorithm
-    private static Match[][] solve(Match[][] rooster,Match huidigeMatch,ArrayList<Ploeg[]> matches,ArrayList<Ploeg> ploegArray,int spelIndex, int rondeIndex, int spellen, int dubbels, int rondes,boolean backtracking){
+    public static Match[][] solve(Match[][] rooster,Match huidigeMatch,ArrayList<Ploeg[]> matches,ArrayList<Ploeg> ploegArray,int spelIndex, int rondeIndex, int spellen, int dubbels, int rondes,boolean backtracking){
         calls++; //wordt bijgehouden voor interesse
         if(verbose){ //print huidig grid
             System.out.println("Call "+ calls);
@@ -145,7 +145,7 @@ public class Spelverdeling {
         }
     }
 
-    private static boolean allePloegenAllesGespeeld(ArrayList<Ploeg> ploegArray,int spellen){
+    public static boolean allePloegenAllesGespeeld(ArrayList<Ploeg> ploegArray,int spellen){
         for (Ploeg ploeg: ploegArray){
             if (ploeg != null){
                 if(!ploeg.allesGespeeld(spellen)) return false;
@@ -155,7 +155,7 @@ public class Spelverdeling {
     }
 
     //print alleen uit wanneer er een verandering aan het grid gebeurt is (voor debugging)
-    private static void toonVerdelingMatch(Match[][] verdeling,int rondes,int spellen) {
+    public static void toonVerdelingMatch(Match[][] verdeling,int rondes,int spellen) {
         String[][] oplossingString = new String[rondes][spellen];
         for(int i = 0; i < rondes;i++){
             for (int j = 0; j < spellen;j++){
