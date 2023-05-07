@@ -11,14 +11,14 @@ public class Main {
             -4 2 1 2 -- dubbels
             -6 3 1 3 -- dubbels zorgt voor backtracking
             -6 3 1 2 -- dubbels en rondes verhogen
+            -4 6 1 3 -- 2.873.215.470  calls en 477.886.542 backtracks
         */
 
-        int ploegen = 6;
-        int spelletjes = 3;
+        int ploegen = 4;
+        int spelletjes = 6;
         int dubbels = 1;
-        int rondes = 2;
+        int rondes = 3;
 
         Spelverdeling.toonVerdeling(ploegen, spelletjes, dubbels, rondes);
-
     }
 }

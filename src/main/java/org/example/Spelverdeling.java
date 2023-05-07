@@ -2,10 +2,8 @@ package org.example;
 import java.util.*;
 
 public class Spelverdeling {
-    static int calls;
-    static int backtracks;
-    static String meanwhile;
-    static final boolean verbose = false;
+    static long calls;
+    static long backtracks;
 
     public static void toonVerdeling(int ploegen, int spellen, int dubbels, int rondes) {
 
@@ -63,11 +61,11 @@ public class Spelverdeling {
         matches.add(null); //Geen match spelen is ook een mogelijkheid. Dit wordt gerepresenteerd met null
 
         //backtracking algoritme
-        Match[][] oplossingMatches = solve(new Match[rondes][spellen],new Match(matches),matches,ploegArray,0,0,spellen,dubbels,rondes,false);
+        Match[][] oplossingMatches = solveLoop(new Match[rondes][spellen],new Match(matches),matches,ploegArray,0,0,spellen,dubbels,rondes,false);
         while(oplossingMatches==null){//blijf rondes toevoegen tot een oplossing gevonden is
             System.out.println("Rondes Verhogen!!");
             rondes++;
-            oplossingMatches = solve(new Match[rondes][spellen],new Match(matches),matches,ploegArray,0,0,spellen,dubbels,rondes,false);
+            oplossingMatches = solveLoop(new Match[rondes][spellen],new Match(matches),matches,ploegArray,0,0,spellen,dubbels,rondes,false);
         }
 
         //Match[][] -> String [][]
@@ -86,63 +84,62 @@ public class Spelverdeling {
     }
 
     //Backtracking Algorithm
-    public static Match[][] solve(Match[][] rooster,Match huidigeMatch,ArrayList<Ploeg[]> matches,ArrayList<Ploeg> ploegArray,int spelIndex, int rondeIndex, int spellen, int dubbels, int rondes,boolean backtracking){
-        calls++; //wordt bijgehouden voor interesse
-        if(verbose){ //print huidig grid
-            System.out.println("Call "+ calls);
-            toonVerdelingMatch(rooster,rondes,spellen);
+    public static Match[][] solveLoop(Match[][] rooster,Match huidigeMatch,ArrayList<Ploeg[]> matches,ArrayList<Ploeg> ploegArray,int spelIndex, int rondeIndex, int spellen, int dubbels, int rondes,boolean backtracking){
+        while(!allePloegenAllesGespeeld(ploegArray,spellen)){
+            calls++;
+
+            //spelindex = -1 -> terug naar vorige ronde
+            if(spelIndex < 0){
+                rondeIndex--;
+                spelIndex = spellen-1;
+
+                //rondeIndex -1 -> geen oplossing gevonden
+                if(rondeIndex < 0) return null;
+            }
+
+            //Backtracking (indexes zijn niet negatief door vorig if statement)
+            if(backtracking){
+                backtracks++; //wordt bijgehouden voor interesse
+                huidigeMatch = rooster[rondeIndex][spelIndex];
+                rooster[rondeIndex][spelIndex] = null;
+                huidigeMatch.backTrack(spelIndex,rondeIndex);
+                huidigeMatch.volgendeMatch();
+                backtracking = false;
+            }
+
+            //Alle spellen gevuld, naar volgende ronde
+            if(spelIndex >= spellen){
+                spelIndex = 0;
+                rondeIndex++;
+            }
+
+
+            //start mutex clauses
+            //Alle rondes gevuld, maar geen oplossing → backtracken naar vorig spel
+            if(rondeIndex >= rondes){
+                spelIndex--;
+                backtracking = true;
+            }
+            //alle mogelijke matchen doorlopen → backtracken naar vorig spel
+            else if(huidigeMatch.getMatchTestIndex()>huidigeMatch.getAmountOfMatches()){
+                spelIndex--;
+                backtracking = true;
+            }
+            else {
+                //Match mag gespeeld worden → naar volgend spel
+                if (huidigeMatch.matchgeldig(dubbels, spelIndex, rondeIndex)) {
+                    huidigeMatch.speelMatch(spelIndex, rondeIndex);
+                    rooster[rondeIndex][spelIndex] = huidigeMatch;
+                    huidigeMatch = new Match(matches);
+                    spelIndex++;
+                }
+                //Match mag niet gespeeld worden → probeer de volgende match
+                else {
+                    huidigeMatch.volgendeMatch();
+                }
+            }
         }
-
-        //spelindex = -1 -> terug naar vorige ronde
-        if(spelIndex < 0){
-            rondeIndex--;
-            spelIndex = spellen-1;
-
-            //rondeIndex -1 -> geen oplossing gevonden
-            if(rondeIndex < 0) return null;
-
-            return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex, rondeIndex, spellen, dubbels, rondes,backtracking);
-        }
-
-        //Backtracking  (indexes zijn niet negatief door vorig if statement)
-        if(backtracking){
-            backtracks++; //wordt bijgehouden voor interesse
-            huidigeMatch = rooster[rondeIndex][spelIndex];
-            rooster[rondeIndex][spelIndex] = null;
-            huidigeMatch.backTrack(spelIndex,rondeIndex);
-            huidigeMatch.volgendeMatch();
-        }
-
-        //Oplossing gevonden
-        if(allePloegenAllesGespeeld(ploegArray,spellen)) return rooster;
-
-        //Alle spellen gevuld, naar volgende ronde
-        if(spelIndex >= spellen){
-            return solve(rooster,huidigeMatch,matches,ploegArray,0, rondeIndex+1, spellen, dubbels, rondes,false);
-        }
-
-        //Alle rondes gevuld maar geen oplossing -> backtracken naar vorig spel
-        if(rondeIndex >= rondes){
-            return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex-1, rondeIndex, spellen, dubbels, rondes,true);
-        }
-
-        //alle mogelijke matchen doorlopen -> backtracken naar vorig spel
-        if(huidigeMatch.getMatchTestIndex()>huidigeMatch.getAmountOfMatches()){
-            return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex-1, rondeIndex, spellen, dubbels, rondes,true);
-        }
-
-        //Match mag gespeeld worden -> naar volgend spel
-        if(huidigeMatch.matchgeldig(dubbels,spelIndex,rondeIndex)){
-            huidigeMatch.speelMatch(spelIndex,rondeIndex);
-            rooster[rondeIndex][spelIndex] = huidigeMatch;
-            huidigeMatch = new Match(matches);
-            return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex+1, rondeIndex, spellen, dubbels, rondes,false);
-        }
-        //Match mag niet gespeeld worden -> probeer de volgende match
-        else{
-            huidigeMatch.volgendeMatch();
-            return solve(rooster,huidigeMatch,matches,ploegArray,spelIndex, rondeIndex, spellen, dubbels, rondes,false);
-        }
+        return rooster;
     }
 
     public static boolean allePloegenAllesGespeeld(ArrayList<Ploeg> ploegArray,int spellen){
@@ -152,35 +149,5 @@ public class Spelverdeling {
             }
         }
         return true;
-    }
-
-    //print alleen uit wanneer er een verandering aan het grid gebeurt is (voor debugging)
-    public static void toonVerdelingMatch(Match[][] verdeling,int rondes,int spellen) {
-        String[][] oplossingString = new String[rondes][spellen];
-        for(int i = 0; i < rondes;i++){
-            for (int j = 0; j < spellen;j++){
-                if(verdeling[i][j] != null) {
-                    oplossingString[i][j] = verdeling[i][j].getMatchString();
-                }
-                else{
-                    oplossingString[i][j] = "NULL";
-                }
-            }
-        }
-
-        StringBuilder concat = new StringBuilder();
-        concat.append("Verdeling:\n");
-        for (int r = 0; r < oplossingString.length; r++) {
-            concat.append("Ronde ").append(r + 1);
-            for (int s = 0; s < oplossingString[r].length; s++) {
-                concat.append("| ").append(oplossingString[r][s]).append(" ");
-                if(!oplossingString[r][s].equals("NULL")) concat.append(" ");
-            }
-            concat.append("|\n").append("̲");
-        }
-        if(!concat.toString().equals(meanwhile)){
-            System.out.println(concat);
-            meanwhile = concat.toString();
-        }
     }
 }
