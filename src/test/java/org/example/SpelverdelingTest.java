@@ -40,7 +40,7 @@ public class SpelverdelingTest {
     public void testTooManyGames() {
         // Arrange
         int ploegen = 4;
-        int spellen = 10;
+        int spellen = 13;
         int dubbels = 1;
         int rondes = 3;
 

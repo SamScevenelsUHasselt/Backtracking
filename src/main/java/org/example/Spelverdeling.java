@@ -7,12 +7,14 @@ public class Spelverdeling {
 
     public static void toonVerdeling(int ploegen, int spellen, int dubbels, int rondes) {
 
+        long start = System.nanoTime();
         Optional<String[][]> oplossing = spelverdeling(ploegen, spellen, dubbels, rondes);
-
+        long finish = System.nanoTime();
         if(oplossing.isPresent()){
             String[][] verdeling = oplossing.get();
             System.out.println("took " + calls + " calls to solve");
             System.out.println("used " + backtracks + " backtracks");
+            System.out.println("Took " + (finish - start)/1000000 + "ms");
             StringBuilder concat = new StringBuilder();
             concat.append("Verdeling:\n");
             for (int r = 0; r < verdeling.length; r++) {
